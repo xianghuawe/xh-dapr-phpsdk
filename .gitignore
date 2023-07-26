@@ -1,0 +1,7 @@
+/vendor/
+/.lsync.pid
+/make/
+/.idea/
+.phpunit.result.cache
+coverage.xml
+/tools/
