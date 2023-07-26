@@ -9,10 +9,11 @@ namespace Dapr;
 class DaprResponse
 {
     public function __construct(
-        public int $code = 0,
-        public mixed $data = [],
-        public string|null $etag = null,
-        public array $headers = []
-    ) {
+        int   $code = 0,
+              $data = [],
+              $etag = null,
+        array $headers = []
+    )
+    {
     }
 }

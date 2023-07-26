@@ -18,20 +18,21 @@ use JetBrains\PhpStorm\ArrayShape;
 class Timer implements ISerialize
 {
     public function __construct(
-        public string $name,
-        public DateInterval $due_time,
-        public DateInterval $period,
-        public string $callback,
-        public mixed $data = null
-    ) {
+        string       $name,
+        DateInterval $due_time,
+        DateInterval $period,
+        string       $callback,
+                     $data = null
+    )
+    {
     }
 
-    public function serialize(mixed $value, ISerializer $serializer): mixed
+    public function serialize($value, ISerializer $serializer): mixed
     {
         return $this->to_array();
     }
 
-    #[ArrayShape(['dueTime' => "string", 'period' => "string", 'callback' => "string", 'data' => "array|null"])]
+
     public function to_array(): array
     {
         return [

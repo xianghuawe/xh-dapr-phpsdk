@@ -1,0 +1,8 @@
+version: "3.2"
+services:
+  composer:
+    image: 10.168.30.23:31196/teamones/teamones-saas:test
+    volumes:
+      - ./:/app
+      - ../.composer-cache:/root/.composer
+    command: "composer update -vvv"

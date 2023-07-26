@@ -27,11 +27,12 @@ use ReflectionNamedType;
 class ActorRuntime
 {
     public function __construct(
-        protected ActorConfig $actor_config,
-        protected FactoryInterface $factory,
-        protected ContainerInterface $container,
-        protected DaprClient $client
-    ) {
+        ActorConfig        $actor_config,
+        FactoryInterface   $factory,
+        ContainerInterface $container,
+        DaprClient         $client
+    )
+    {
     }
 
     /**
@@ -100,7 +101,7 @@ class ActorRuntime
             $actor = $this->get_actor($reflection, $reference, $states);
             // @codeCoverageIgnoreStart
         } catch (Exception $exception) {
-            throw new NotFound('Actor could not be located', previous: $exception);
+            throw new NotFound('Actor could not be located', $exception);
         }
         // @codeCoverageIgnoreEnd
         $result = $loan($actor);
@@ -108,8 +109,8 @@ class ActorRuntime
         try {
             $this->commit($states);
             // @codeCoverageIgnoreStart
-        } catch (DependencyException | DaprException | NotFoundException $e) {
-            throw new SaveStateFailure('Failed to commit actor state', previous: $e);
+        } catch (DependencyException|DaprException|NotFoundException $e) {
+            throw new SaveStateFailure('Failed to commit actor state', $e);
         }
 
         // @codeCoverageIgnoreEnd
@@ -169,9 +170,10 @@ class ActorRuntime
      */
     protected function get_states(
         ReflectionClass $reflection,
-        ActorReference $reference,
-        DaprClient $client
-    ): array {
+        ActorReference  $reference,
+        DaprClient      $client
+    ): array
+    {
         $constructor = $reflection->getMethod('__construct');
         $states = [];
         foreach ($constructor->getParameters() as $parameter) {
@@ -191,7 +193,7 @@ class ActorRuntime
                         );
 
                         $states[$parameter->name] = $state;
-                        $this->client->logger?->debug('Found state {t}', ['t' => $type_name]);
+                        $this->client->logger->debug('Found state {t}', ['t' => $type_name]);
                     }
                 }
             }
@@ -212,13 +214,14 @@ class ActorRuntime
      * @throws ReflectionException
      */
     protected function begin_transaction(
-        ActorState $state,
-        ReflectionClass $reflected_type,
-        ActorReference $reference,
-        DaprClient $client,
-        CacheInterface $cache,
+        ActorState       $state,
+        ReflectionClass  $reflected_type,
+        ActorReference   $reference,
+        DaprClient       $client,
+        CacheInterface   $cache,
         ?ReflectionClass $original = null
-    ): void {
+    ): void
+    {
         if ($reflected_type->name !== ActorState::class) {
             $this->begin_transaction(
                 $state,
@@ -270,7 +273,7 @@ class ActorRuntime
         $is_activated = file_exists($activation_tracker);
 
         if (!$is_activated) {
-            $this->client->logger?->info(
+            $this->client->logger->info(
                 'Activating {type}||{id}',
                 ['type' => $reference->get_actor_type(), 'id' => $reference->get_actor_id()]
             );

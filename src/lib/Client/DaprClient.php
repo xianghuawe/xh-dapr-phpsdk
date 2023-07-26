@@ -23,20 +23,28 @@ use Psr\Log\NullLogger;
  */
 abstract class DaprClient
 {
+    public IDeserializer $deserializer;
+    public ISerializer $serializer;
+    public LoggerInterface $logger;
+
     public function __construct(
-        public IDeserializer $deserializer,
-        public ISerializer $serializer,
-        public LoggerInterface $logger
-    ) {
+        IDeserializer   $deserializer,
+        ISerializer     $serializer,
+        LoggerInterface $logger
+    )
+    {
+        $this->logger = $logger;
+        $this->serializer = $serializer;
+        $this->deserializer = $deserializer;
     }
 
     public static function clientBuilder(): DaprClientBuilder
     {
         return new DaprClientBuilder(
-            defaultHttpHost: 'http://127.0.0.1:' . (getenv('DAPR_HTTP_PORT') ?: '3500'),
-            deserializationConfig: new DeserializationConfig(),
-            serializationConfig: new SerializationConfig(),
-            logger: new NullLogger()
+            'http://127.0.0.1:' . (getenv('DAPR_HTTP_PORT') ?: '3500'),
+            new DeserializationConfig(),
+            new SerializationConfig(),
+            new NullLogger()
         );
     }
 
@@ -49,7 +57,7 @@ abstract class DaprClient
      */
     abstract public function invokeBinding(
         BindingRequest $bindingRequest,
-        string $dataType = 'array'
+        string         $dataType = 'array'
     ): BindingResponse;
 
     /**
@@ -61,7 +69,7 @@ abstract class DaprClient
      */
     abstract public function invokeBindingAsync(
         BindingRequest $bindingRequest,
-        string $dataType = 'array'
+        string         $dataType = 'array'
     ): PromiseInterface;
 
     /**
@@ -75,9 +83,10 @@ abstract class DaprClient
     public function createInvokeBindingRequest(
         string $bindingName,
         string $operation,
-        mixed $data,
-        array $metadata = []
-    ): BindingRequest {
+        mixed  $data,
+        array  $metadata = []
+    ): BindingRequest
+    {
         return new BindingRequest($bindingName, $operation, $this->serializer->as_json($data), $metadata);
     }
 
@@ -91,8 +100,8 @@ abstract class DaprClient
     abstract public function publishEvent(
         string $pubsubName,
         string $topicName,
-        mixed $data,
-        array $metadata = [],
+        mixed  $data,
+        array  $metadata = [],
         string $contentType = 'application/json'
     ): void;
 
@@ -107,8 +116,8 @@ abstract class DaprClient
     abstract public function publishEventAsync(
         string $pubsubName,
         string $topicName,
-        mixed $data,
-        array $metadata = [],
+        mixed  $data,
+        array  $metadata = [],
         string $contentType = 'application/json'
     ): PromiseInterface;
 
@@ -123,10 +132,10 @@ abstract class DaprClient
      */
     abstract public function invokeMethod(
         string $httpMethod,
-        AppId $appId,
+        AppId  $appId,
         string $methodName,
-        mixed $data = null,
-        array $metadata = []
+        mixed  $data = null,
+        array  $metadata = []
     ): ResponseInterface;
 
     /**
@@ -140,10 +149,10 @@ abstract class DaprClient
      */
     abstract public function invokeMethodAsync(
         string $httpMethod,
-        AppId $appId,
+        AppId  $appId,
         string $methodName,
-        mixed $data = null,
-        array $metadata = []
+        mixed  $data = null,
+        array  $metadata = []
     ): PromiseInterface;
 
     /**
@@ -157,11 +166,11 @@ abstract class DaprClient
      * @return PromiseInterface<T>
      */
     abstract public function getStateAsync(
-        string $storeName,
-        string $key,
-        string $asType = 'array',
+        string      $storeName,
+        string      $key,
+        string      $asType = 'array',
         Consistency $consistency = null,
-        array $metadata = []
+        array       $metadata = []
     ): PromiseInterface;
 
     /**
@@ -173,9 +182,9 @@ abstract class DaprClient
      */
     abstract public function getBulkStateAsync(
         string $storeName,
-        array $keys,
-        int $parallelism = 10,
-        array $metadata = []
+        array  $keys,
+        int    $parallelism = 10,
+        array  $metadata = []
     ): PromiseInterface;
 
     /**
@@ -187,9 +196,9 @@ abstract class DaprClient
      */
     abstract public function getBulkState(
         string $storeName,
-        array $keys,
-        int $parallelism = 10,
-        array $metadata = []
+        array  $keys,
+        int    $parallelism = 10,
+        array  $metadata = []
     ): array;
 
     /**
@@ -203,11 +212,11 @@ abstract class DaprClient
      * @return T
      */
     abstract public function getState(
-        string $storeName,
-        string $key,
-        string $asType = 'array',
+        string      $storeName,
+        string      $key,
+        string      $asType = 'array',
         Consistency $consistency = null,
-        array $metadata = []
+        array       $metadata = []
     ): mixed;
 
     /**
@@ -222,9 +231,9 @@ abstract class DaprClient
     abstract public function saveStateAsync(
         string $storeName,
         string $key,
-        mixed $value,
-        Consistency|null $consistency = null,
-        array $metadata = []
+               $value,
+               $consistency = null,
+        array  $metadata = []
     ): PromiseInterface;
 
     /**
@@ -238,9 +247,9 @@ abstract class DaprClient
     abstract public function saveState(
         string $storeName,
         string $key,
-        mixed $value,
-        Consistency|null $consistency = null,
-        array $metadata = []
+               $value,
+               $consistency = null,
+        array  $metadata = []
     ): void;
 
     /**
@@ -256,10 +265,10 @@ abstract class DaprClient
     abstract public function trySaveStateAsync(
         string $storeName,
         string $key,
-        mixed $value,
+               $value,
         string $etag,
-        Consistency|null $consistency = null,
-        array $metadata = []
+               $consistency = null,
+        array  $metadata = []
     ): PromiseInterface;
 
     /**
@@ -275,10 +284,10 @@ abstract class DaprClient
     abstract public function trySaveState(
         string $storeName,
         string $key,
-        mixed $value,
+               $value,
         string $etag,
-        Consistency|null $consistency = null,
-        array $metadata = []
+               $consistency = null,
+        array  $metadata = []
     ): bool;
 
     /**
@@ -311,8 +320,8 @@ abstract class DaprClient
         string $storeName,
         string $key,
         string $asType = 'array',
-        Consistency|null $consistency = null,
-        array $metadata = []
+               $consistency = null,
+        array  $metadata = []
     ): PromiseInterface;
 
     /**
@@ -329,8 +338,8 @@ abstract class DaprClient
         string $storeName,
         string $key,
         string $asType = 'array',
-        Consistency|null $consistency = null,
-        array $metadata = []
+               $consistency = null,
+        array  $metadata = []
     ): array;
 
     /**
@@ -348,8 +357,8 @@ abstract class DaprClient
      */
     abstract public function executeStateTransactionAsync(
         string $storeName,
-        array $operations,
-        array $metadata = []
+        array  $operations,
+        array  $metadata = []
     ): PromiseInterface;
 
     /**
@@ -360,10 +369,10 @@ abstract class DaprClient
      * @return PromiseInterface<void>
      */
     abstract public function deleteStateAsync(
-        string $storeName,
-        string $key,
+        string      $storeName,
+        string      $key,
         Consistency $consistency = null,
-        array $metadata = []
+        array       $metadata = []
     ): PromiseInterface;
 
     /**
@@ -373,10 +382,10 @@ abstract class DaprClient
      * @param array<array-key, string> $metadata
      */
     abstract public function deleteState(
-        string $storeName,
-        string $key,
+        string      $storeName,
+        string      $key,
         Consistency $consistency = null,
-        array $metadata = []
+        array       $metadata = []
     ): void;
 
     /**
@@ -388,11 +397,11 @@ abstract class DaprClient
      * @return PromiseInterface<bool>
      */
     abstract public function tryDeleteStateAsync(
-        string $storeName,
-        string $key,
-        string $etag,
+        string      $storeName,
+        string      $key,
+        string      $etag,
         Consistency $consistency = null,
-        array $metadata = []
+        array       $metadata = []
     ): PromiseInterface;
 
     /**
@@ -404,11 +413,11 @@ abstract class DaprClient
      * @return bool
      */
     abstract public function tryDeleteState(
-        string $storeName,
-        string $key,
-        string $etag,
+        string      $storeName,
+        string      $key,
+        string      $etag,
         Consistency $consistency = null,
-        array $metadata = []
+        array       $metadata = []
     ): bool;
 
     /**
@@ -425,14 +434,14 @@ abstract class DaprClient
      * @param array<array-key, string> $metadata
      * @return array<array-key, string>
      */
-    abstract public function getSecret(string $storeName, string $key, array $metadata = []): array|null;
+    abstract public function getSecret(string $storeName, string $key, array $metadata = []);
 
     /**
      * @param string $storeName
      * @param array<array-key, string> $metadata
      * @return PromiseInterface<null|array<array-key,array<array-key, string>>>
      */
-    abstract public function getBulkSecretAsync(string $storeName, array $metadata = []): PromiseInterface;
+    abstract public function getBulkSecretAsync(string $storeName, array $metadata = []);
 
     /**
      * @param string $storeName
@@ -453,7 +462,7 @@ abstract class DaprClient
      *
      * @return MetadataResponse
      */
-    abstract public function getMetadata(): MetadataResponse|null;
+    abstract public function getMetadata();
 
     /**
      * Shutdown the Daprd sidecar
@@ -472,11 +481,11 @@ abstract class DaprClient
      * @return mixed
      */
     abstract public function invokeActorMethod(
-        string $httpMethod,
+        string          $httpMethod,
         IActorReference $actor,
-        string $method,
-        mixed $parameter = null,
-        string $as = 'array'
+        string          $method,
+        mixed           $parameter = null,
+        string          $as = 'array'
     ): mixed;
 
     /**
@@ -489,11 +498,11 @@ abstract class DaprClient
      * @return PromiseInterface
      */
     abstract public function invokeActorMethodAsync(
-        string $httpMethod,
+        string          $httpMethod,
         IActorReference $actor,
-        string $method,
-        mixed $parameter = null,
-        string $as = 'array'
+        string          $method,
+        mixed           $parameter = null,
+        string          $as = 'array'
     ): PromiseInterface;
 
     /**
@@ -534,8 +543,8 @@ abstract class DaprClient
      */
     abstract public function getActorStateAsync(
         IActorReference $actor,
-        string $key,
-        string $as = 'array'
+        string          $key,
+        string          $as = 'array'
     ): PromiseInterface;
 
     /**
@@ -549,7 +558,7 @@ abstract class DaprClient
      */
     abstract public function createActorReminder(
         IActorReference $actor,
-        Reminder $reminder
+        Reminder        $reminder
     ): bool;
 
     /**
@@ -563,7 +572,7 @@ abstract class DaprClient
      */
     abstract public function createActorReminderAsync(
         IActorReference $actor,
-        Reminder $reminder
+        Reminder        $reminder
     ): PromiseInterface;
 
     /**
@@ -614,7 +623,7 @@ abstract class DaprClient
      */
     abstract public function createActorTimer(
         IActorReference $actor,
-        Timer $timer
+        Timer           $timer
     ): bool;
 
     /**
@@ -629,7 +638,7 @@ abstract class DaprClient
      */
     abstract public function createActorTimerAsync(
         IActorReference $actor,
-        Timer $timer
+        Timer           $timer
     ): PromiseInterface;
 
     /**
@@ -654,7 +663,7 @@ abstract class DaprClient
      * @param string $token
      * @return null|array{dapr-api-token: string}
      */
-    protected function getDaprApiToken(string $token): array|null
+    protected function getDaprApiToken(string $token)
     {
         if (empty($token)) {
             return null;

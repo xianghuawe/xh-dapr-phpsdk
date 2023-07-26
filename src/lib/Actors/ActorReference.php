@@ -17,16 +17,16 @@ use ReflectionClass;
  */
 final class ActorReference implements IActorReference, ISerialize, IDeserialize
 {
-    public function __construct(private string $id, private string $actor_type)
+    public function __construct(string $id, string $actor_type)
     {
     }
 
     /**
      * @inheritDoc
      */
-    public static function get(mixed $actor): IActorReference
+    public static function get($actor): IActorReference
     {
-        $id = $actor?->get_id();
+        $id = $actor->get_id();
 
         if ($id === null) {
             throw new LogicException('actor(proxy) must implement get_id()');
@@ -34,29 +34,30 @@ final class ActorReference implements IActorReference, ISerialize, IDeserialize
 
         $detected_dapr_type = self::get_dapr_type($actor);
 
-        $dapr_type = $actor->DAPR_TYPE ?? $detected_dapr_type?->type;
+        $dapr_type = $actor->DAPR_TYPE ?? $detected_dapr_type->type;
 
         if ($dapr_type === null) {
-            throw new LogicException('Missing DaprType attribute on '.$actor::class);
+            throw new LogicException('Missing DaprType attribute on ' . $actor::class);
         }
 
-        return new self(id: $id, actor_type: $dapr_type);
+        return new self($id, $dapr_type);
     }
 
-    private static function get_dapr_type(object|string $type): DaprType|null
+    private static function get_dapr_type($type)
     {
         $reflector = new ReflectionClass($type);
         /**
          * @var DaprType|null $type_attribute
          */
+        // todo
         $type_attribute = ($reflector->getAttributes(DaprType::class)[0] ?? null)?->newInstance();
 
         return $type_attribute;
     }
 
-    public static function deserialize(mixed $value, IDeserializer $deserializer): mixed
+    public static function deserialize($value, IDeserializer $deserializer): mixed
     {
-        return new ActorReference(id: $value['ActorId'], actor_type: $value['ActorType']);
+        return new ActorReference($value['ActorId'], $value['ActorType']);
     }
 
     /**
@@ -91,7 +92,7 @@ final class ActorReference implements IActorReference, ISerialize, IDeserialize
      *
      * @return array
      */
-    public function serialize(mixed $value, ISerializer $serializer): array
+    public function serialize($value, ISerializer $serializer): array
     {
         return ['ActorId' => $value->id, 'ActorType' => $value->actor_type];
     }

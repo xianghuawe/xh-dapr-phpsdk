@@ -16,10 +16,10 @@ use Psr\Log\LoggerInterface;
 class DaprClientBuilder
 {
     public function __construct(
-        private string $defaultHttpHost,
-        private DeserializationConfig $deserializationConfig,
-        private SerializationConfig $serializationConfig,
-        private LoggerInterface $logger
+          string $defaultHttpHost,
+          DeserializationConfig $deserializationConfig,
+          SerializationConfig $serializationConfig,
+          LoggerInterface $logger
     ) {
     }
 

@@ -32,12 +32,13 @@ use ReflectionException;
  */
 class FileGenerator extends GenerateProxy
 {
-    #[Pure] public function __construct(
-        string $interface,
-        string $dapr_type,
+    public function __construct(
+        string     $interface,
+        string     $dapr_type,
         DaprClient $client,
-        private array $usings = []
-    ) {
+        array      $usings = []
+    )
+    {
         parent::__construct($interface, $dapr_type, $client);
     }
 
@@ -53,14 +54,22 @@ class FileGenerator extends GenerateProxy
      * @throws ReflectionException
      */
     public static function generate(
-        string $interface,
+        string           $interface,
         FactoryInterface $factory,
-        string|null $override_type = null
-    ): PhpFile {
+                         $override_type = null
+    ): PhpFile
+    {
         $reflected_interface = new ReflectionClass($interface);
+        if($override_type){
+            // todo 
+
+            $fa = $reflected_interface->getAttributes(DaprType::class);
+
+
+        }
         $type = $override_type ?? ($reflected_interface->getAttributes(
-                    DaprType::class
-                )[0] ?? null)?->newInstance()->type;
+            DaprType::class
+        )[0] ?? null)?->newInstance()->type;
 
         // @codeCoverageIgnoreStart
         if (empty($type)) {

@@ -25,11 +25,12 @@ class DaprHttpClient extends DaprClient
     protected Client $httpClient;
 
     public function __construct(
-        private string $baseHttpUri,
-        IDeserializer $deserializer,
-        ISerializer $serializer,
+        string          $baseHttpUri,
+        IDeserializer   $deserializer,
+        ISerializer     $serializer,
         LoggerInterface $logger
-    ) {
+    )
+    {
         parent::__construct($deserializer, $serializer, $logger);
         if (str_ends_with($this->baseHttpUri, '/')) {
             $this->baseHttpUri = rtrim($this->baseHttpUri, '/');
@@ -40,8 +41,8 @@ class DaprHttpClient extends DaprClient
             'headers' => [
                 'User-Agent' => 'DaprPHPSDK/v1.2',
                 'Accept' => 'application/json',
-                'Content-Type' => 'application/json'
-            ]
+                'Content-Type' => 'application/json',
+            ],
         ];
 
         if ($this->getDaprToken() !== null) {
@@ -68,7 +69,7 @@ class DaprHttpClient extends DaprClient
         }
     }
 
-    public function getMetadata(): MetadataResponse|null
+    public function getMetadata()
     {
         try {
             $result = $this->httpClient->get('/v1.0/metadata');

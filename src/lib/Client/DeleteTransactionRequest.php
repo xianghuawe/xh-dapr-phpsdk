@@ -13,10 +13,11 @@ class DeleteTransactionRequest extends StateTransactionRequest
     public string $operationType = 'delete';
 
     public function __construct(
-        public string $key,
-        public string $etag = '',
-        public array $metadata = [],
-        public ?Consistency $consistency = null
-    ) {
+        string       $key,
+        string       $etag = '',
+        array        $metadata = [],
+        ?Consistency $consistency = null
+    )
+    {
     }
 }

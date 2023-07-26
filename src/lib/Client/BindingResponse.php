@@ -15,7 +15,7 @@ class BindingResponse
      * @param T $data
      * @param iterable<string, string> $metadata
      */
-    public function __construct(public BindingRequest $request, public mixed $data, public array $metadata)
+    public function __construct(BindingRequest $request, $data, array $metadata)
     {
     }
 }

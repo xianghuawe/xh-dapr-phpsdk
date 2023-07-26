@@ -8,7 +8,7 @@ namespace Dapr\Actors;
  */
 class ReentrantConfig
 {
-    public function __construct(public int|null $max_stack_depth = null)
+    public function __construct($max_stack_depth = null)
     {
     }
 }
